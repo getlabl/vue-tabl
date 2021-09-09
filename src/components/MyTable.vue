@@ -19,7 +19,7 @@
 
 <script lang="ts">
 import { computed, defineComponent, PropType } from 'vue'
-import TableDataProvider from '../data/TableDataManager'
+import TableDataManager from '../data/TableDataManager'
 
 function range(size: number) {
   return new Array(size).fill(0)
@@ -28,21 +28,23 @@ function range(size: number) {
 export default defineComponent({
   name: 'MyTable',
   props: {
-    dataManager: {
-      type: Object as PropType<TableDataProvider>,
+    data: {
+      type: Array as PropType<string[][]>,
       required: true,
     },
   },
   setup(props, { emit }) {
+    const dataManager = computed(() => new TableDataManager(props.data))
+
+    const rowRange = computed(() => range(dataManager.value.rowCount))
+    const columnRange = computed(() => range(dataManager.value.columnCount))
+
     const onInput = function(rowIndex: number, columnIndex: number, value: string) {
-      props.dataManager.setCellValue(rowIndex, columnIndex, value)
+      dataManager.value.setCellValue(rowIndex, columnIndex, value)
       emit('cell-input', rowIndex, columnIndex, value)
     }
 
-    const rowRange = computed(() => range(props.dataManager.rowCount))
-    const columnRange = computed(() => range(props.dataManager.columnCount))
-
-    return { onInput, rowRange, columnRange }
+    return { onInput, rowRange, columnRange, dataManager }
   },
 })
 </script>
