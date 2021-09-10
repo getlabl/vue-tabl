@@ -53,8 +53,8 @@
           },
         ]"
         @click="onRemoveRowClick"
-        @mouseenter="onAddHover"
-        @mouseleave="onAddHover"
+        @mouseenter="onRemoveHover"
+        @mouseleave="onRemoveUnhover"
       ></MyTableRemoveButton>
     </th>
   </tr>
