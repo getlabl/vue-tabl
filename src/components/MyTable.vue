@@ -1,32 +1,47 @@
 <template>
-  <div>
-    <table>
-      <tbody>
-        <tr v-for="(row, rowIndex) in rowRange" :key="'row-' + rowIndex">
-          <td v-for="(cell, columnIndex) in columnRange" :key="`cell-${row}-${columnIndex}`">
-            <input
-              type="text"
-              :key="`input-${row}-${columnIndex}`"
-              :value="dataManager.getCellValue(rowIndex, columnIndex)"
-              @input.stop="onInput(rowIndex, columnIndex, $event.target.value)"
-            />
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+  <table class="my-table">
+    <thead>
+      <th></th>
+      <th v-for="(_, columnIndex) in columnRange" :key="columnIndex">
+        <MyTableAddButton></MyTableAddButton>
+      </th>
+    </thead>
+    <tbody>
+      <MyTableRow
+        v-for="(row, rowIndex) in data"
+        :data="row"
+        :key="'row' + rowIndex"
+        :row-index="rowIndex"
+        :highlighted-row="highlightedRow"
+        :highlighted-column="highlightedColumn"
+        @cell-input="onCellInput"
+        @cell-hover="onCellHover"
+        @cell-unhover="onCellUnhover"
+        @row-add="onRowAdd"
+      />
+    </tbody>
+    <thead>
+      <th></th>
+      <th v-for="(_, columnIndex) in columnRange" :key="columnIndex">
+        {{ columnIndex }}
+      </th>
+    </thead>
+  </table>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, PropType } from 'vue'
+import { computed, defineComponent, ref, PropType } from 'vue'
 import TableDataManager from '../data/TableDataManager'
-
-function range(size: number) {
-  return new Array(size).fill(0)
-}
+import range from '../util/range'
+import MyTableRow from './MyTableRow.vue'
+import MyTableAddButton from './MyTableAddButton.vue'
 
 export default defineComponent({
   name: 'MyTable',
+  components: {
+    MyTableRow,
+    MyTableAddButton,
+  },
   props: {
     data: {
       type: Array as PropType<string[][]>,
@@ -39,12 +54,44 @@ export default defineComponent({
     const rowRange = computed(() => range(dataManager.value.rowCount))
     const columnRange = computed(() => range(dataManager.value.columnCount))
 
-    const onInput = function(rowIndex: number, columnIndex: number, value: string) {
+    const onCellInput = function(rowIndex: number, columnIndex: number, value: string) {
       dataManager.value.setCellValue(rowIndex, columnIndex, value)
       emit('cell-input', rowIndex, columnIndex, value)
     }
 
-    return { onInput, rowRange, columnRange, dataManager }
+    const highlightedRow = ref(-1)
+    const highlightedColumn = ref(-1)
+
+    const onCellHover = function(rowIndex: number, columnIndex: number) {
+      highlightedRow.value = rowIndex
+      highlightedColumn.value = columnIndex
+    }
+
+    const onCellUnhover = function(rowIndex: number, columnIndex: number) {
+      if (highlightedRow.value === rowIndex) highlightedRow.value = -1
+      if (highlightedColumn.value === columnIndex) highlightedColumn.value = -1
+    }
+
+    const onRowAdd = (index: number) => dataManager.value.createRow(index)
+
+    return {
+      onCellInput,
+      rowRange,
+      columnRange,
+      dataManager,
+      onCellHover,
+      onCellUnhover,
+      highlightedRow,
+      highlightedColumn,
+      onRowAdd,
+    }
   },
 })
 </script>
+
+<style lang="scss" scoped>
+.my-table {
+  border-spacing: 0;
+  border-radius: 4px;
+}
+</style>

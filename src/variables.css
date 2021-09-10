@@ -1,0 +1,9 @@
+:root {
+  --my-table-radius-default: 4px;
+  --my-table-button-radius-default: 6px;
+  --my-table-border-color-default: #d6d6d6;
+  --my-table-line-hover-color-default: #f7f8fd;
+  --my-table-cell-hover-color-default: #f3f5fc;
+  --my-table-accent-color-default: #7ca5f7;
+  --my-table-contrast-color-default: white;
+}
