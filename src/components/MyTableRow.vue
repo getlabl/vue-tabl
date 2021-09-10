@@ -13,17 +13,18 @@
           },
         ]"
         @click="onAddRowClick"
+        @mouseenter="onAddHover"
+        @mouseleave="onAddUnhover"
       />
     </th>
     <td
       :class="[
         'my-table-row__cell',
         {
-          'my-table-row__cell--row-highlighted': rowIndex === highlightedRow,
-          'my-table-row__cell--column-highlighted': columnIndex === highlightedColumn,
-          'my-table-row__cell--add-row-highlighted': rowIndex === highlightedRow && highlightedColumn === -1,
-          'my-table-row__cell--add-column-highlighted': columnIndex === highlightedColumn && highlightedRow === -1,
-          'my-table-row__cell--remove-highlighted': isRemoveHovered || columnIndex === removeHighlightedColumn,
+          'my-table-row__cell--highlighted': rowIndex === highlightedRow || columnIndex === highlightedColumn,
+          'my-table-row__cell--add-row-highlighted': isAddHovered,
+          'my-table-row__cell--add-column-highlighted': isAddColumnHighlighted,
+          'my-table-row__cell--remove-highlighted': isRemoveHovered || isRemoveColumnHighlighted,
         },
       ]"
       v-for="(cell, columnIndex) in data"
@@ -39,7 +40,11 @@
         @input.stop="onInput(rowIndex, columnIndex, $event.target.value)"
       />
     </td>
-    <th class="my-table-row__remove-cell" @mouseenter="onRemoveHover" @mouseleave="onRemoveUnhover">
+    <th
+      class="my-table-row__remove-cell"
+      @mouseenter="onCellHover(rowIndex, -1)"
+      @mouseleave="onCellUnhover(rowIndex, -1)"
+    >
       <MyTableRemoveButton
         :class="[
           'my-table-row__remove-button',
@@ -48,6 +53,8 @@
           },
         ]"
         @click="onRemoveRowClick"
+        @mouseenter="onAddHover"
+        @mouseleave="onAddHover"
       ></MyTableRemoveButton>
     </th>
   </tr>
@@ -75,7 +82,8 @@ export default defineComponent({
     },
     highlightedRow: Number,
     highlightedColumn: Number,
-    removeHighlightedColumn: Number,
+    isRemoveColumnHighlighted: Boolean,
+    isAddColumnHighlighted: Boolean,
   },
   setup(props, { emit }) {
     const onInput = function(rowIndex: number, columnIndex: number, value: string) {
@@ -93,15 +101,12 @@ export default defineComponent({
     const onAddRowClick = () => emit('row-add', props.rowIndex)
 
     const isRemoveHovered = ref(false)
-    const onRemoveHover = function() {
-      onCellHover(props.rowIndex, -1)
-      isRemoveHovered.value = true
-    }
+    const onRemoveHover = () => (isRemoveHovered.value = true)
+    const onRemoveUnhover = () => (isRemoveHovered.value = false)
 
-    const onRemoveUnhover = function() {
-      onCellUnhover(props.rowIndex, -1)
-      isRemoveHovered.value = false
-    }
+    const isAddHovered = ref(false)
+    const onAddHover = () => (isAddHovered.value = true)
+    const onAddUnhover = () => (isAddHovered.value = false)
 
     const onRemoveRowClick = () => emit('row-remove', props.rowIndex)
 
@@ -114,6 +119,9 @@ export default defineComponent({
       onRemoveHover,
       onRemoveUnhover,
       onRemoveRowClick,
+      isAddHovered,
+      onAddHover,
+      onAddUnhover,
     }
   },
 })
@@ -162,11 +170,6 @@ export default defineComponent({
   }
 }
 
-.my-table-row__cell--row-highlighted,
-.my-table-row__cell--column-highlighted {
-  background-color: var(--my-table-line-hover-color, var(--my-table-line-hover-color-default));
-}
-
 .my-table-row__cell {
   border-top: 1px solid var(--my-table-border-color, var(--my-table-border-color-default));
   border-left: 1px solid var(--my-table-border-color, var(--my-table-border-color-default));
@@ -177,19 +180,23 @@ export default defineComponent({
   }
 }
 
-.my-table-row__cell--add-row-highlighted {
+.my-table-row__cell--highlighted {
+  background-color: var(--my-table-line-hover-color, var(--my-table-line-hover-color-default));
+}
+
+.my-table-row__cell--highlighted.my-table-row__cell--add-row-highlighted {
   z-index: 1;
   position: relative;
   box-shadow: 0 4px 0 var(--my-table-accent-color, var(--my-table-accent-color-default));
 }
 
-.my-table-row__cell--add-column-highlighted {
+.my-table-row__cell--highlighted.my-table-row__cell--add-column-highlighted {
   z-index: 1;
   position: relative;
   box-shadow: 4px 0 0 var(--my-table-accent-color, var(--my-table-accent-color-default));
 }
 
-.my-table-row__cell--remove-highlighted {
+.my-table-row__cell--highlighted.my-table-row__cell--remove-highlighted {
   background-color: var(--my-table-remove-hover-color, var(--my-table-remove-hover-color-default));
   box-shadow: none;
 }
