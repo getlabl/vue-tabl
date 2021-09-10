@@ -13,6 +13,7 @@
           'my-table-row__input',
           {
             'my-table-row__input--line-highlighted': rowIndex === highlightedRow || columnIndex === highlightedColumn,
+            'my-table-row__input--remove-highlighted': isRemoveHovered,
           },
         ]"
         type="text"
@@ -23,20 +24,26 @@
         @mouseleave="onCellUnhover(rowIndex, columnIndex)"
       />
     </td>
-    <th>
-      {{ rowIndex }}
+    <th class="my-table-row__remove-cell" @mouseenter="onRemoveHover" @mouseleave="onRemoveUnhover">
+      <MyTableRemoveButton
+        class="my-table-row__remove-button"
+        v-if="highlightedRow === rowIndex"
+        @click="onRemoveRowClick"
+      ></MyTableRemoveButton>
     </th>
   </tr>
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from 'vue'
+import { defineComponent, ref, PropType } from 'vue'
 import MyTableAddButton from './MyTableAddButton.vue'
+import MyTableRemoveButton from './MyTableRemoveButton.vue'
 
 export default defineComponent({
   name: 'MyTableRow',
   components: {
     MyTableAddButton,
+    MyTableRemoveButton,
   },
   props: {
     rowIndex: {
@@ -65,7 +72,29 @@ export default defineComponent({
 
     const onAddRowClick = () => emit('row-add', props.rowIndex)
 
-    return { onInput, onCellHover, onCellUnhover, onAddRowClick }
+    const isRemoveHovered = ref(false)
+    const onRemoveHover = function() {
+      onCellHover(props.rowIndex, -1)
+      isRemoveHovered.value = true
+    }
+
+    const onRemoveUnhover = function() {
+      onCellUnhover(props.rowIndex, -1)
+      isRemoveHovered.value = false
+    }
+
+    const onRemoveRowClick = () => emit('row-remove', props.rowIndex)
+
+    return {
+      onInput,
+      onCellHover,
+      onCellUnhover,
+      onAddRowClick,
+      isRemoveHovered,
+      onRemoveHover,
+      onRemoveUnhover,
+      onRemoveRowClick,
+    }
   },
 })
 </script>
@@ -117,6 +146,10 @@ export default defineComponent({
   background-color: var(--my-table-line-hover-color, var(--my-table-line-hover-color-default));
 }
 
+.my-table-row__input--remove-highlighted {
+  background-color: var(--my-table-remove-hover-color, var(--my-table-remove-hover-color-default));
+}
+
 .my-table-row__cell {
   border-top: 1px solid var(--my-table-border-color, var(--my-table-border-color-default));
   border-left: 1px solid var(--my-table-border-color, var(--my-table-border-color-default));
@@ -127,12 +160,17 @@ export default defineComponent({
   }
 }
 
-.my-table-row__add-cell {
+.my-table-row__add-cell,
+.my-table-row__remove-cell {
   padding: 0;
   width: 30px;
 }
 
 .my-table-row__add-button {
   margin-right: 8px;
+}
+
+.my-table-row__remove-button {
+  margin-left: 8px;
 }
 </style>

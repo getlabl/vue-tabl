@@ -32,6 +32,10 @@ $radius: var(--my-table-button-radius, var(--my-table-button-radius-default));
   border-radius: $radius;
   cursor: pointer;
 
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
   transition: background-color 0.2s, fill 0.2s;
 
   &:hover {

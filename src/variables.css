@@ -4,6 +4,8 @@
   --my-table-border-color-default: #d6d6d6;
   --my-table-line-hover-color-default: #f7f8fd;
   --my-table-cell-hover-color-default: #f3f5fc;
+  --my-table-remove-hover-color-default: #ffeded;
   --my-table-accent-color-default: #7ca5f7;
+  --my-table-danger-color-default: #ff5959;
   --my-table-contrast-color-default: white;
 }

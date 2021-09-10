@@ -18,12 +18,13 @@
         @cell-hover="onCellHover"
         @cell-unhover="onCellUnhover"
         @row-add="onRowAdd"
+        @row-remove="onRowRemove"
       />
     </tbody>
     <thead>
       <th></th>
       <th v-for="(_, columnIndex) in columnRange" :key="columnIndex">
-        {{ columnIndex }}
+        <MyTableRemoveButton></MyTableRemoveButton>
       </th>
     </thead>
   </table>
@@ -35,12 +36,14 @@ import TableDataManager from '../data/TableDataManager'
 import range from '../util/range'
 import MyTableRow from './MyTableRow.vue'
 import MyTableAddButton from './MyTableAddButton.vue'
+import MyTableRemoveButton from './MyTableRemoveButton.vue'
 
 export default defineComponent({
   name: 'MyTable',
   components: {
     MyTableRow,
     MyTableAddButton,
+    MyTableRemoveButton,
   },
   props: {
     data: {
@@ -74,6 +77,8 @@ export default defineComponent({
 
     const onRowAdd = (index: number) => dataManager.value.createRow(index)
 
+    const onRowRemove = (index: number) => dataManager.value.removeRow(index)
+
     return {
       onCellInput,
       rowRange,
@@ -84,6 +89,7 @@ export default defineComponent({
       highlightedRow,
       highlightedColumn,
       onRowAdd,
+      onRowRemove,
     }
   },
 })
