@@ -5,17 +5,32 @@
       @mouseenter="onCellHover(rowIndex, -1)"
       @mouseleave="onCellUnhover(rowIndex, -1)"
     >
-      <MyTableAddButton class="my-table-row__add-button" v-if="highlightedRow === rowIndex" @click="onAddRowClick" />
-    </th>
-    <td class="my-table-row__cell" v-for="(cell, columnIndex) in data" :key="`cell-${columnIndex}`">
-      <input
+      <MyTableAddButton
         :class="[
-          'my-table-row__input',
+          'my-table-row__add-button',
           {
-            'my-table-row__input--line-highlighted': rowIndex === highlightedRow || columnIndex === highlightedColumn,
-            'my-table-row__input--remove-highlighted': isRemoveHovered,
+            'my-table-row__add-button--hidden': highlightedRow !== rowIndex,
           },
         ]"
+        @click="onAddRowClick"
+      />
+    </th>
+    <td
+      :class="[
+        'my-table-row__cell',
+        {
+          'my-table-row__cell--row-highlighted': rowIndex === highlightedRow,
+          'my-table-row__cell--column-highlighted': columnIndex === highlightedColumn,
+          'my-table-row__cell--add-row-highlighted': rowIndex === highlightedRow && highlightedColumn === -1,
+          'my-table-row__cell--add-column-highlighted': columnIndex === highlightedColumn && highlightedRow === -1,
+          'my-table-row__cell--remove-highlighted': isRemoveHovered || columnIndex === removeHighlightedColumn,
+        },
+      ]"
+      v-for="(cell, columnIndex) in data"
+      :key="`cell-${columnIndex}`"
+    >
+      <input
+        :class="['my-table-row__input']"
         type="text"
         :key="`input-${columnIndex}`"
         :value="cell"
@@ -26,8 +41,12 @@
     </td>
     <th class="my-table-row__remove-cell" @mouseenter="onRemoveHover" @mouseleave="onRemoveUnhover">
       <MyTableRemoveButton
-        class="my-table-row__remove-button"
-        v-if="highlightedRow === rowIndex"
+        :class="[
+          'my-table-row__remove-button',
+          {
+            'my-table-row__remove-button--hidden': highlightedRow !== rowIndex,
+          },
+        ]"
         @click="onRemoveRowClick"
       ></MyTableRemoveButton>
     </th>
@@ -56,6 +75,7 @@ export default defineComponent({
     },
     highlightedRow: Number,
     highlightedColumn: Number,
+    removeHighlightedColumn: Number,
   },
   setup(props, { emit }) {
     const onInput = function(rowIndex: number, columnIndex: number, value: string) {
@@ -142,12 +162,9 @@ export default defineComponent({
   }
 }
 
-.my-table-row__input--line-highlighted {
+.my-table-row__cell--row-highlighted,
+.my-table-row__cell--column-highlighted {
   background-color: var(--my-table-line-hover-color, var(--my-table-line-hover-color-default));
-}
-
-.my-table-row__input--remove-highlighted {
-  background-color: var(--my-table-remove-hover-color, var(--my-table-remove-hover-color-default));
 }
 
 .my-table-row__cell {
@@ -160,10 +177,32 @@ export default defineComponent({
   }
 }
 
+.my-table-row__cell--add-row-highlighted {
+  z-index: 1;
+  position: relative;
+  box-shadow: 0 4px 0 var(--my-table-accent-color, var(--my-table-accent-color-default));
+}
+
+.my-table-row__cell--add-column-highlighted {
+  z-index: 1;
+  position: relative;
+  box-shadow: 4px 0 0 var(--my-table-accent-color, var(--my-table-accent-color-default));
+}
+
+.my-table-row__cell--remove-highlighted {
+  background-color: var(--my-table-remove-hover-color, var(--my-table-remove-hover-color-default));
+  box-shadow: none;
+}
+
 .my-table-row__add-cell,
 .my-table-row__remove-cell {
   padding: 0;
   width: 30px;
+}
+
+.my-table-row__add-button--hidden,
+.my-table-row__remove-button--hidden {
+  opacity: 0;
 }
 
 .my-table-row__add-button {

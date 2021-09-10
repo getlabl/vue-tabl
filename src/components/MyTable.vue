@@ -2,8 +2,22 @@
   <table class="my-table">
     <thead>
       <th></th>
-      <th v-for="(_, columnIndex) in columnRange" :key="columnIndex">
-        <MyTableAddButton></MyTableAddButton>
+      <th
+        class="my-table__add-cell"
+        v-for="(_, columnIndex) in columnRange"
+        :key="columnIndex"
+        @mouseenter="onCellHover(-1, columnIndex)"
+        @mouseleave="onCellUnhover(-1, columnIndex)"
+      >
+        <MyTableAddButton
+          :class="[
+            'my-table__add-button',
+            {
+              'my-table__add-button--hidden': columnIndex !== highlightedColumn,
+            },
+          ]"
+          @click="onColumnAdd(columnIndex)"
+        ></MyTableAddButton>
       </th>
     </thead>
     <tbody>
@@ -14,6 +28,7 @@
         :row-index="rowIndex"
         :highlighted-row="highlightedRow"
         :highlighted-column="highlightedColumn"
+        :remove-highlighted-column="removeHighlightedColumn"
         @cell-input="onCellInput"
         @cell-hover="onCellHover"
         @cell-unhover="onCellUnhover"
@@ -23,8 +38,23 @@
     </tbody>
     <thead>
       <th></th>
-      <th v-for="(_, columnIndex) in columnRange" :key="columnIndex">
-        <MyTableRemoveButton></MyTableRemoveButton>
+      <th
+        class="my-table__remove-cell"
+        v-for="(_, columnIndex) in columnRange"
+        :key="columnIndex"
+        @mouseenter="onRemoveHover(columnIndex)"
+        @mouseleave="onRemoveUnhover(columnIndex)"
+      >
+        <MyTableRemoveButton
+          v-if="columnIndex === highlightedColumn"
+          :class="[
+            'my-table__remove-button',
+            {
+              'my-table__remove-button--hidden': columnIndex !== highlightedColumn,
+            },
+          ]"
+          @click="onColumnRemove(columnIndex)"
+        ></MyTableRemoveButton>
       </th>
     </thead>
   </table>
@@ -64,6 +94,7 @@ export default defineComponent({
 
     const highlightedRow = ref(-1)
     const highlightedColumn = ref(-1)
+    const removeHighlightedColumn = ref(-1)
 
     const onCellHover = function(rowIndex: number, columnIndex: number) {
       highlightedRow.value = rowIndex
@@ -76,8 +107,19 @@ export default defineComponent({
     }
 
     const onRowAdd = (index: number) => dataManager.value.createRow(index)
-
     const onRowRemove = (index: number) => dataManager.value.removeRow(index)
+    const onColumnAdd = (index: number) => dataManager.value.createColumn(index)
+    const onColumnRemove = (index: number) => dataManager.value.removeColumn(index)
+
+    const onRemoveHover = function(columnIndex: number) {
+      removeHighlightedColumn.value = columnIndex
+      onCellHover(-1, columnIndex)
+    }
+
+    const onRemoveUnhover = function(columnIndex: number) {
+      if (removeHighlightedColumn.value === columnIndex) removeHighlightedColumn.value = -1
+      onCellUnhover(-1, columnIndex)
+    }
 
     return {
       onCellInput,
@@ -90,6 +132,11 @@ export default defineComponent({
       highlightedColumn,
       onRowAdd,
       onRowRemove,
+      onColumnAdd,
+      onColumnRemove,
+      onRemoveHover,
+      onRemoveUnhover,
+      removeHighlightedColumn,
     }
   },
 })
@@ -99,5 +146,16 @@ export default defineComponent({
 .my-table {
   border-spacing: 0;
   border-radius: 4px;
+}
+
+.my-table__add-cell,
+.my-table__remove-cell {
+  padding: 0;
+  height: 30px;
+}
+
+.my-table__add-button--hidden,
+.my-table__remove-button--hidden {
+  opacity: 0;
 }
 </style>
