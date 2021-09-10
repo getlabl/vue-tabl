@@ -28,6 +28,8 @@
       ]"
       v-for="(cell, columnIndex) in data"
       :key="`cell-${columnIndex}`"
+      @mouseenter="onCellHover(rowIndex, columnIndex)"
+      @mouseleave="onCellUnhover(rowIndex, columnIndex)"
     >
       <input
         :class="['my-table-row__input']"
@@ -35,8 +37,6 @@
         :key="`input-${columnIndex}`"
         :value="cell"
         @input.stop="onInput(rowIndex, columnIndex, $event.target.value)"
-        @mouseenter="onCellHover(rowIndex, columnIndex)"
-        @mouseleave="onCellUnhover(rowIndex, columnIndex)"
       />
     </td>
     <th class="my-table-row__remove-cell" @mouseenter="onRemoveHover" @mouseleave="onRemoveUnhover">
