@@ -20,11 +20,16 @@
         :highlighted-column="highlightedColumn"
         :is-remove-column-highlighted="isRemoveButtonHovered"
         :is-add-column-highlighted="isAddButtonHovered"
+        :style="getRowStyle(rowIndex)"
+        :row-count="dataManager.rowCount"
         @cell-input="onCellInput"
         @cell-hover="onCellHover"
         @cell-unhover="onCellUnhover"
         @row-add="onRowAdd"
         @row-remove="onRowRemove"
+        @row-move-start="onRowMoveStart(rowIndex)"
+        @row-move="onRowMove"
+        @row-move-end="onRowMoveEnd"
       />
     </tbody>
     <MyTableColumnButtons
@@ -94,6 +99,31 @@ export default defineComponent({
     const onAddHover = () => (isAddButtonHovered.value = true)
     const onAddUnhover = () => (isAddButtonHovered.value = false)
 
+    const movingRow = ref(-1)
+    const movingRowOffset = ref(0)
+    const onRowMoveStart = (index: number) => (movingRow.value = index)
+    const onRowMove = (offset: number) => (movingRowOffset.value = offset)
+    const onRowMoveEnd = function() {
+      dataManager.value.moveRow(movingRow.value, movingRowOffset.value)
+      movingRow.value = -1
+      movingRowOffset.value = 0
+    }
+
+    const getRowStyle = function(rowIndex: number) {
+      if (movingRow.value === rowIndex) return { position: 'relative', zIndex: 2 }
+      if (movingRow.value === -1 || movingRowOffset.value === 0) return { transform: '' }
+
+      if (rowIndex >= movingRow.value + movingRowOffset.value && rowIndex <= movingRow.value)
+        return {
+          transform: `translateY(41px)`,
+        }
+
+      if (rowIndex <= movingRow.value + movingRowOffset.value && rowIndex > movingRow.value)
+        return {
+          transform: `translateY(-41px)`,
+        }
+    }
+
     return {
       onCellInput,
       dataManager,
@@ -113,6 +143,11 @@ export default defineComponent({
       onAddUnhover,
       MyTableAddButton,
       MyTableRemoveButton,
+      onRowMoveStart,
+      onRowMoveEnd,
+      onRowMove,
+      getRowStyle,
+      movingRow,
     }
   },
 })

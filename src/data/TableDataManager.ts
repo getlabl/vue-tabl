@@ -111,4 +111,10 @@ export default class TableDataManager {
     for (let j = 0; j < columnCount; j++) rowValues[j] = ''
     return rowValues
   }
+
+  public moveRow(rowIndex: number, offset: number) {
+    const targetRowIndex = rowIndex + offset
+    const row = this._values.splice(rowIndex, 1)
+    this._values.splice(targetRowIndex, 0, ...row)
+  }
 }

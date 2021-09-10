@@ -1,5 +1,10 @@
 <template>
-  <tr class="my-table-row">
+  <tr
+    class="my-table-row"
+    :style="{
+      transform: `translateY(${rowOffset}px)`,
+    }"
+  >
     <th
       class="my-table-row__add-cell"
       @mouseenter="onCellHover(rowIndex, -1)"
@@ -39,6 +44,14 @@
         :value="cell"
         @input.stop="onInput(rowIndex, columnIndex, $event.target.value)"
       />
+      <MyTableMoveControl
+        class="my-table-row__move-control"
+        axis="y"
+        v-if="columnIndex === 0"
+        @move="onMove"
+        @move-start="onMoveStart"
+        @move-end="onMoveEnd"
+      />
     </td>
     <th
       class="my-table-row__remove-cell"
@@ -64,15 +77,21 @@
 import { defineComponent, ref, PropType } from 'vue'
 import MyTableAddButton from './MyTableAddButton.vue'
 import MyTableRemoveButton from './MyTableRemoveButton.vue'
+import MyTableMoveControl from './MyTableMoveControl.vue'
 
 export default defineComponent({
   name: 'MyTableRow',
   components: {
     MyTableAddButton,
     MyTableRemoveButton,
+    MyTableMoveControl,
   },
   props: {
     rowIndex: {
+      type: Number,
+      required: true,
+    },
+    rowCount: {
       type: Number,
       required: true,
     },
@@ -110,6 +129,28 @@ export default defineComponent({
 
     const onRemoveRowClick = () => emit('row-remove', props.rowIndex)
 
+    const rowOffset = ref(0)
+
+    const onMove = function(offset: number) {
+      const sign = offset / Math.abs(offset)
+      let offsetInRows = Math.round(Math.abs(offset / 42)) * sign
+      offsetInRows = Math.max(offsetInRows, -props.rowIndex)
+      offsetInRows = Math.min(offsetInRows, props.rowCount - props.rowIndex - 1)
+
+      if (!isNaN(offsetInRows)) emit('row-move', offsetInRows)
+
+      rowOffset.value = Math.min(Math.max(props.rowIndex * -41, offset), (props.rowCount - props.rowIndex - 1) * 41)
+
+      console.log('Row move: ' + offsetInRows)
+    }
+
+    const onMoveStart = () => emit('row-move-start')
+
+    const onMoveEnd = function() {
+      rowOffset.value = 0
+      emit('row-move-end')
+    }
+
     return {
       onInput,
       onCellHover,
@@ -122,6 +163,10 @@ export default defineComponent({
       isAddHovered,
       onAddHover,
       onAddUnhover,
+      onMove,
+      rowOffset,
+      onMoveEnd,
+      onMoveStart,
     }
   },
 })
@@ -142,10 +187,6 @@ export default defineComponent({
   }
 
   &:last-of-type {
-    .my-table-row__cell {
-      border-bottom: 1px solid var(--my-table-border-color, var(--my-table-border-color-default));
-    }
-
     .my-table-row__cell:first-of-type {
       border-bottom-left-radius: var(--my-table-radius, var(--my-table-radius-default));
     }
@@ -171,13 +212,12 @@ export default defineComponent({
 }
 
 .my-table-row__cell {
+  position: relative;
+  background-color: var(--my-table-contrast-color, var(--my-table-contrast-color-default));
   border-top: 1px solid var(--my-table-border-color, var(--my-table-border-color-default));
   border-left: 1px solid var(--my-table-border-color, var(--my-table-border-color-default));
+  box-shadow: 0.5px 0.5px 0 0.5px var(--my-table-border-color, var(--my-table-border-color-default));
   padding: 0;
-
-  &:last-of-type {
-    border-right: 1px solid var(--my-table-border-color, var(--my-table-border-color-default));
-  }
 }
 
 .my-table-row__cell--highlighted {
@@ -186,19 +226,18 @@ export default defineComponent({
 
 .my-table-row__cell--highlighted.my-table-row__cell--add-row-highlighted {
   z-index: 1;
-  position: relative;
-  box-shadow: 0 4px 0 var(--my-table-accent-color, var(--my-table-accent-color-default));
+  box-shadow: 0.5px 0.5px 0 0.5px var(--my-table-border-color, var(--my-table-border-color-default)),
+    0 4px 0 var(--my-table-accent-color, var(--my-table-accent-color-default));
 }
 
 .my-table-row__cell--highlighted.my-table-row__cell--add-column-highlighted {
   z-index: 1;
-  position: relative;
-  box-shadow: 4px 0 0 var(--my-table-accent-color, var(--my-table-accent-color-default));
+  box-shadow: 0.5px 0.5px 0 0.5px var(--my-table-border-color, var(--my-table-border-color-default)),
+    4px 0 0 var(--my-table-accent-color, var(--my-table-accent-color-default));
 }
 
 .my-table-row__cell--highlighted.my-table-row__cell--remove-highlighted {
   background-color: var(--my-table-remove-hover-color, var(--my-table-remove-hover-color-default));
-  box-shadow: none;
 }
 
 .my-table-row__add-cell,
@@ -218,5 +257,10 @@ export default defineComponent({
 
 .my-table-row__remove-button {
   margin-left: 8px;
+}
+
+.my-table-row__move-control {
+  position: absolute;
+  top: 12px;
 }
 </style>
