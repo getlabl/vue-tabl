@@ -8,6 +8,7 @@
       @cell-unhover="onCellUnhover(-1, $event)"
       @button-hover="onAddHover"
       @button-unhover="onAddUnhover"
+      @button-click="onColumnAdd"
     />
     <tbody>
       <MyTableRow
@@ -34,6 +35,7 @@
       @cell-unhover="onCellUnhover(-1, $event)"
       @button-hover="onRemoveHover"
       @button-unhover="onRemoveUnhover"
+      @button-click="onColumnRemove"
     />
   </table>
 </template>

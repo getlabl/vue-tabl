@@ -16,7 +16,7 @@
             'my-table-column-buttons__button--hidden': columnIndex !== highlightedColumn,
           },
         ]"
-        @click="onColumnAdd(columnIndex)"
+        @click="onButtonClick(columnIndex)"
         @mouseenter="onButtonHover(columnIndex)"
         @mouseleave="onButtonUnhover(columnIndex)"
       />
@@ -53,7 +53,9 @@ export default defineComponent({
     const onButtonHover = (index: number) => emit('button-hover', index)
     const onButtonUnhover = (index: number) => emit('button-unhover', index)
 
-    return { columnRange, onCellHover, onCellUnhover, onButtonHover, onButtonUnhover }
+    const onButtonClick = (index: number) => emit('button-click', index)
+
+    return { columnRange, onCellHover, onCellUnhover, onButtonHover, onButtonUnhover, onButtonClick }
   },
 })
 </script>
