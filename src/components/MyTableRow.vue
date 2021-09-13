@@ -1,10 +1,5 @@
 <template>
-  <tr
-    class="my-table-row"
-    :style="{
-      transform: `translateY(${rowOffset}px)`,
-    }"
-  >
+  <tr class="my-table-row" :style="rootStyle">
     <th
       class="my-table-row__add-cell"
       @mouseenter="onCellHover(rowIndex, -1)"
@@ -32,6 +27,7 @@
           'my-table-row__cell--remove-highlighted': isRemoveHovered || isRemoveColumnHighlighted,
         },
       ]"
+      :style="getCellStyle(columnIndex)"
       v-for="(cell, columnIndex) in data"
       :key="`cell-${columnIndex}`"
       @mouseenter="onCellHover(rowIndex, columnIndex)"
@@ -48,9 +44,18 @@
         class="my-table-row__move-control"
         axis="y"
         v-if="columnIndex === 0"
-        @move="onMove"
-        @move-start="onMoveStart"
-        @move-end="onMoveEnd"
+        @move="onRowMove"
+        @move-start="onRowMoveStart"
+        @move-end="onRowMoveEnd"
+      />
+      <MyTableMoveControl
+        class="my-table-row__move-control"
+        style="right: 0"
+        axis="x"
+        v-if="rowIndex === 0"
+        @move="onColumnMove"
+        @move-start="onColumnMoveStart(columnIndex)"
+        @move-end="onColumnMoveEnd"
       />
     </td>
     <th
@@ -74,10 +79,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, PropType } from 'vue'
+import { defineComponent, ref, PropType, computed } from 'vue'
 import MyTableAddButton from './MyTableAddButton.vue'
 import MyTableRemoveButton from './MyTableRemoveButton.vue'
 import MyTableMoveControl from './MyTableMoveControl.vue'
+import useHoverStates from '../hooks/useHoverStates'
 
 export default defineComponent({
   name: 'MyTableRow',
@@ -99,10 +105,24 @@ export default defineComponent({
       type: Array as PropType<string[]>,
       required: true,
     },
+    rowOffset: {
+      type: Number,
+      required: true,
+    },
+    columnOffsets: {
+      type: Array as PropType<number[]>,
+      required: true,
+    },
+    movingColumnIndex: {
+      type: Number,
+      required: true,
+    },
     highlightedRow: Number,
     highlightedColumn: Number,
     isRemoveColumnHighlighted: Boolean,
     isAddColumnHighlighted: Boolean,
+    isRowMoving: Boolean,
+    isAnyMoving: Boolean,
   },
   setup(props, { emit }) {
     const onInput = function(rowIndex: number, columnIndex: number, value: string) {
@@ -119,36 +139,45 @@ export default defineComponent({
 
     const onAddRowClick = () => emit('row-add', props.rowIndex)
 
-    const isRemoveHovered = ref(false)
-    const onRemoveHover = () => (isRemoveHovered.value = true)
-    const onRemoveUnhover = () => (isRemoveHovered.value = false)
-
-    const isAddHovered = ref(false)
-    const onAddHover = () => (isAddHovered.value = true)
-    const onAddUnhover = () => (isAddHovered.value = false)
+    const [isRemoveHovered, onRemoveHover, onRemoveUnhover] = useHoverStates()
+    const [isAddHovered, onAddHover, onAddUnhover] = useHoverStates()
 
     const onRemoveRowClick = () => emit('row-remove', props.rowIndex)
 
-    const rowOffset = ref(0)
+    const onRowMove = (offset: number) => emit('row-move', offset)
+    const onRowMoveStart = () => emit('row-move-start')
+    const onRowMoveEnd = () => emit('row-move-end')
 
-    const onMove = function(offset: number) {
-      const sign = offset / Math.abs(offset)
-      let offsetInRows = Math.round(Math.abs(offset / 42)) * sign
-      offsetInRows = Math.max(offsetInRows, -props.rowIndex)
-      offsetInRows = Math.min(offsetInRows, props.rowCount - props.rowIndex - 1)
+    const onColumnMove = (offset: number) => emit('column-move', offset)
+    const onColumnMoveStart = (columnIndex: number) => emit('column-move-start', columnIndex)
+    const onColumnMoveEnd = () => emit('column-move-end')
 
-      if (!isNaN(offsetInRows)) emit('row-move', offsetInRows)
+    const rootStyle = computed(() => {
+      const result: any = { transform: `translateY(${props.rowOffset}px)` }
 
-      rowOffset.value = Math.min(Math.max(props.rowIndex * -41, offset), (props.rowCount - props.rowIndex - 1) * 41)
+      if (!props.isRowMoving && props.isAnyMoving) {
+        result.transition = 'transform 0.2s'
+      }
+      if (props.isRowMoving) {
+        result.position = 'relative'
+        result.zIndex = 2
+      }
 
-      console.log('Row move: ' + offsetInRows)
-    }
+      return result
+    })
 
-    const onMoveStart = () => emit('row-move-start')
+    const getCellStyle = function(index: number) {
+      const result: any = { transform: `translateX(${props.columnOffsets[index]}px)` }
 
-    const onMoveEnd = function() {
-      rowOffset.value = 0
-      emit('row-move-end')
+      if (props.movingColumnIndex !== index && props.isAnyMoving) {
+        result.transition = 'transform 0.2s'
+      }
+      if (props.isRowMoving) {
+        result.position = 'relative'
+        result.zIndex = 2
+      }
+
+      return result
     }
 
     return {
@@ -163,10 +192,14 @@ export default defineComponent({
       isAddHovered,
       onAddHover,
       onAddUnhover,
-      onMove,
-      rowOffset,
-      onMoveEnd,
-      onMoveStart,
+      onRowMove,
+      onRowMoveEnd,
+      onRowMoveStart,
+      rootStyle,
+      onColumnMove,
+      onColumnMoveStart,
+      onColumnMoveEnd,
+      getCellStyle,
     }
   },
 })

@@ -117,4 +117,12 @@ export default class TableDataManager {
     const row = this._values.splice(rowIndex, 1)
     this._values.splice(targetRowIndex, 0, ...row)
   }
+
+  public moveColumn(columnIndex: number, offset: number) {
+    for (const row of this._values) {
+      const targetColumnIndex = columnIndex + offset
+      const cell = row.splice(columnIndex, 1)
+      row.splice(targetColumnIndex, 0, ...cell)
+    }
+  }
 }

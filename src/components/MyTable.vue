@@ -18,10 +18,14 @@
         :row-index="rowIndex"
         :highlighted-row="highlightedRow"
         :highlighted-column="highlightedColumn"
-        :is-remove-column-highlighted="isRemoveButtonHovered"
-        :is-add-column-highlighted="isAddButtonHovered"
-        :style="getRowStyle(rowIndex)"
+        :is-remove-column-highlighted="isRemoveHovered"
+        :is-add-column-highlighted="isAddHovered"
         :row-count="dataManager.rowCount"
+        :row-offset="getRowOffset(rowIndex)"
+        :column-offsets="columnOffsets"
+        :is-row-moving="rowIndex === movingRowIndex"
+        :moving-column-index="movingColumnIndex"
+        :is-any-moving="isRowMoving || isColumnMoving"
         @cell-input="onCellInput"
         @cell-hover="onCellHover"
         @cell-unhover="onCellUnhover"
@@ -30,6 +34,9 @@
         @row-move-start="onRowMoveStart(rowIndex)"
         @row-move="onRowMove"
         @row-move-end="onRowMoveEnd"
+        @column-move-start="onColumnMoveStart"
+        @column-move="onColumnMove"
+        @column-move-end="onColumnMoveEnd"
       />
     </tbody>
     <MyTableColumnButtons
@@ -52,6 +59,8 @@ import MyTableRow from './MyTableRow.vue'
 import MyTableRemoveButton from './MyTableRemoveButton.vue'
 import MyTableColumnButtons from './MyTableColumnButtons.vue'
 import MyTableAddButton from './MyTableAddButton.vue'
+import useHoverStates from '@/hooks/useHoverStates'
+import useDraggable from '@/hooks/useDraggable'
 
 export default defineComponent({
   name: 'MyTable',
@@ -91,38 +100,36 @@ export default defineComponent({
     const onColumnAdd = (index: number) => dataManager.value.createColumn(index)
     const onColumnRemove = (index: number) => dataManager.value.removeColumn(index)
 
-    const isRemoveButtonHovered = ref(false)
-    const onRemoveHover = () => (isRemoveButtonHovered.value = true)
-    const onRemoveUnhover = () => (isRemoveButtonHovered.value = false)
+    const [isRemoveHovered, onRemoveHover, onRemoveUnhover] = useHoverStates()
+    const [isAddHovered, onAddHover, onAddUnhover] = useHoverStates()
 
-    const isAddButtonHovered = ref(false)
-    const onAddHover = () => (isAddButtonHovered.value = true)
-    const onAddUnhover = () => (isAddButtonHovered.value = false)
+    const rowCount = computed(() => dataManager.value.rowCount)
+    const columnCount = computed(() => dataManager.value.columnCount)
+    const moveRow = computed(() => dataManager.value.moveRow.bind(dataManager.value))
+    const moveColumn = computed(() => dataManager.value.moveColumn.bind(dataManager.value))
 
-    const movingRow = ref(-1)
-    const movingRowOffset = ref(0)
-    const onRowMoveStart = (index: number) => (movingRow.value = index)
-    const onRowMove = (offset: number) => (movingRowOffset.value = offset)
-    const onRowMoveEnd = function() {
-      dataManager.value.moveRow(movingRow.value, movingRowOffset.value)
-      movingRow.value = -1
-      movingRowOffset.value = 0
-    }
+    const [movingRowIndex, isRowMoving, onRowMoveStart, onRowMoveEnd, onRowMove, getRowOffset] = useDraggable(
+      41,
+      rowCount,
+      moveRow
+    )
 
-    const getRowStyle = function(rowIndex: number) {
-      if (movingRow.value === rowIndex) return { position: 'relative', zIndex: 2 }
-      if (movingRow.value === -1 || movingRowOffset.value === 0) return { transform: '' }
+    const [
+      movingColumnIndex,
+      isColumnMoving,
+      onColumnMoveStart,
+      onColumnMoveEnd,
+      onColumnMove,
+      getColumnOffset,
+    ] = useDraggable(101, columnCount, moveColumn)
 
-      if (rowIndex >= movingRow.value + movingRowOffset.value && rowIndex <= movingRow.value)
-        return {
-          transform: `translateY(41px)`,
-        }
-
-      if (rowIndex <= movingRow.value + movingRowOffset.value && rowIndex > movingRow.value)
-        return {
-          transform: `translateY(-41px)`,
-        }
-    }
+    const columnOffsets = computed(() => {
+      const result: number[] = new Array(columnCount.value)
+      for (let i = 0; i < columnCount.value; i++) {
+        result[i] = getColumnOffset(i)
+      }
+      return result
+    })
 
     return {
       onCellInput,
@@ -137,8 +144,8 @@ export default defineComponent({
       onColumnRemove,
       onRemoveHover,
       onRemoveUnhover,
-      isRemoveButtonHovered,
-      isAddButtonHovered,
+      isRemoveHovered,
+      isAddHovered,
       onAddHover,
       onAddUnhover,
       MyTableAddButton,
@@ -146,8 +153,15 @@ export default defineComponent({
       onRowMoveStart,
       onRowMoveEnd,
       onRowMove,
-      getRowStyle,
-      movingRow,
+      getRowOffset,
+      movingRowIndex,
+      isRowMoving,
+      movingColumnIndex,
+      isColumnMoving,
+      onColumnMoveStart,
+      onColumnMoveEnd,
+      onColumnMove,
+      columnOffsets,
     }
   },
 })
