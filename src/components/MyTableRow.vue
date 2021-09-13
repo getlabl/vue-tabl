@@ -1,5 +1,5 @@
 <template>
-  <tr class="my-table-row" :style="rootStyle">
+  <tr :class="['my-table-row', { 'my-table-row--add-row-highlighted': isAddHovered }]" :style="rootStyle">
     <th
       class="my-table-row__add-cell"
       @mouseenter="onCellHover(rowIndex, -1)"
@@ -41,7 +41,7 @@
         @input.stop="onInput(rowIndex, columnIndex, $event.target.value)"
       />
       <MyTableMoveControl
-        class="my-table-row__move-control"
+        class="my-table-row__move-control-left"
         axis="y"
         v-if="columnIndex === 0"
         @move="onRowMove"
@@ -49,8 +49,7 @@
         @move-end="onRowMoveEnd"
       />
       <MyTableMoveControl
-        class="my-table-row__move-control"
-        style="right: 0"
+        class="my-table-row__move-control-right"
         axis="x"
         v-if="rowIndex === 0"
         @move="onColumnMove"
@@ -230,6 +229,11 @@ export default defineComponent({
   }
 }
 
+.my-table-row--add-row-highlighted {
+  position: relative;
+  z-index: 1;
+}
+
 .my-table-row__input {
   border: none;
   height: 40px;
@@ -292,8 +296,16 @@ export default defineComponent({
   margin-left: 8px;
 }
 
-.my-table-row__move-control {
+.my-table-row__move-control-left {
   position: absolute;
   top: 12px;
+  cursor: ns-resize;
+}
+
+.my-table-row__move-control-right {
+  position: absolute;
+  top: 12px;
+  right: 0;
+  cursor: ew-resize;
 }
 </style>
