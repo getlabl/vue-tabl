@@ -171,7 +171,7 @@ export default defineComponent({
       if (props.movingColumnIndex !== index && props.isAnyMoving) {
         result.transition = 'transform 0.2s'
       }
-      if (props.isRowMoving) {
+      if (props.movingColumnIndex === index) {
         result.position = 'relative'
         result.zIndex = 2
       }
