@@ -38,7 +38,7 @@
       @mouseleave="onCellUnhover(rowIndex, columnIndex)"
     >
       <input
-        :class="['my-table-row__input']"
+        class="my-table-row__input"
         type="text"
         :key="`input-${columnIndex}`"
         :value="cell"
