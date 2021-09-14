@@ -1,31 +1,31 @@
 <template>
   <table class="my-table">
     <MyTableColumnButtons
-      :columnCount="dataManager.columnCount"
-      :highlightedColumn="highlightedColumn"
-      :buttonComponent="MyTableAddButton"
+      :column-count="dataManager.columnCount"
+      :hovered-column-index="hoveredColumnIndex"
+      :button-component="MyTableAddButton"
       @cell-hover="onCellHover(-1, $event)"
       @cell-unhover="onCellUnhover(-1, $event)"
-      @button-hover="onAddHover"
-      @button-unhover="onAddUnhover"
+      @button-hover="onAddButtonHover"
+      @button-unhover="onAddButtonUnhover"
       @button-click="onColumnAdd"
     />
     <tbody>
       <MyTableRow
-        v-for="(row, rowIndex) in data"
-        :data="row"
+        v-for="(rowData, rowIndex) in data"
+        :data="rowData"
         :key="'row' + rowIndex"
         :row-index="rowIndex"
-        :highlighted-row="highlightedRow"
-        :highlighted-column="highlightedColumn"
-        :is-remove-column-highlighted="isRemoveHovered"
-        :is-add-column-highlighted="isAddHovered"
+        :hovered-row-index="hoveredRowIndex"
+        :hovered-column-index="hoveredColumnIndex"
+        :is-remove-column-highlighted="isRemoveButtonHovered"
+        :is-add-column-highlighted="isAddButtonHovered"
         :row-count="dataManager.rowCount"
         :row-offset="getRowOffset(rowIndex)"
         :column-offsets="columnOffsets"
         :is-row-moving="rowIndex === movingRowIndex"
-        :moving-column-index="movingColumnIndex"
         :is-any-moving="isRowMoving || isColumnMoving"
+        :moving-column-index="movingColumnIndex"
         @cell-input="onCellInput"
         @cell-hover="onCellHover"
         @cell-unhover="onCellUnhover"
@@ -40,13 +40,13 @@
       />
     </tbody>
     <MyTableColumnButtons
-      :columnCount="dataManager.columnCount"
-      :highlightedColumn="highlightedColumn"
-      :buttonComponent="MyTableRemoveButton"
+      :column-count="dataManager.columnCount"
+      :hovered-column-index="hoveredColumnIndex"
+      :button-component="MyTableRemoveButton"
       @cell-hover="onCellHover(-1, $event)"
       @cell-unhover="onCellUnhover(-1, $event)"
-      @button-hover="onRemoveHover"
-      @button-unhover="onRemoveUnhover"
+      @button-hover="onRemoveButtonHover"
+      @button-unhover="onRemoveButtonUnhover"
       @button-click="onColumnRemove"
     />
   </table>
@@ -82,17 +82,17 @@ export default defineComponent({
       emit('cell-input', rowIndex, columnIndex, value)
     }
 
-    const highlightedRow = ref(-1)
-    const highlightedColumn = ref(-1)
+    const hoveredRowIndex = ref(-1)
+    const hoveredColumnIndex = ref(-1)
 
     const onCellHover = function(rowIndex: number, columnIndex: number) {
-      highlightedRow.value = rowIndex
-      highlightedColumn.value = columnIndex
+      hoveredRowIndex.value = rowIndex
+      hoveredColumnIndex.value = columnIndex
     }
 
     const onCellUnhover = function(rowIndex: number, columnIndex: number) {
-      if (highlightedRow.value === rowIndex) highlightedRow.value = -1
-      if (highlightedColumn.value === columnIndex) highlightedColumn.value = -1
+      if (hoveredRowIndex.value === rowIndex) hoveredRowIndex.value = -1
+      if (hoveredColumnIndex.value === columnIndex) hoveredColumnIndex.value = -1
     }
 
     const onRowAdd = (index: number) => dataManager.value.createRow(index)
@@ -100,8 +100,8 @@ export default defineComponent({
     const onColumnAdd = (index: number) => dataManager.value.createColumn(index)
     const onColumnRemove = (index: number) => dataManager.value.removeColumn(index)
 
-    const [isRemoveHovered, onRemoveHover, onRemoveUnhover] = useHoverStates()
-    const [isAddHovered, onAddHover, onAddUnhover] = useHoverStates()
+    const [isRemoveButtonHovered, onRemoveButtonHover, onRemoveButtonUnhover] = useHoverStates()
+    const [isAddButtonHovered, onAddButtonHover, onAddButtonUnhover] = useHoverStates()
 
     const rowCount = computed(() => dataManager.value.rowCount)
     const columnCount = computed(() => dataManager.value.columnCount)
@@ -136,18 +136,18 @@ export default defineComponent({
       dataManager,
       onCellHover,
       onCellUnhover,
-      highlightedRow,
-      highlightedColumn,
+      hoveredRowIndex,
+      hoveredColumnIndex,
       onRowAdd,
       onRowRemove,
       onColumnAdd,
       onColumnRemove,
-      onRemoveHover,
-      onRemoveUnhover,
-      isRemoveHovered,
-      isAddHovered,
-      onAddHover,
-      onAddUnhover,
+      onRemoveButtonHover,
+      onRemoveButtonUnhover,
+      isRemoveButtonHovered,
+      isAddButtonHovered,
+      onAddButtonHover,
+      onAddButtonUnhover,
       MyTableAddButton,
       MyTableRemoveButton,
       onRowMoveStart,

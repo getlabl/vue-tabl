@@ -9,7 +9,7 @@
         :class="[
           'my-table-row__add-button',
           {
-            'my-table-row__add-button--hidden': highlightedRow !== rowIndex,
+            'my-table-row__add-button--hidden': hoveredRowIndex !== rowIndex,
           },
         ]"
         @click="onAddRowClick"
@@ -21,7 +21,7 @@
       :class="[
         'my-table-row__cell',
         {
-          'my-table-row__cell--highlighted': rowIndex === highlightedRow || columnIndex === highlightedColumn,
+          'my-table-row__cell--highlighted': rowIndex === hoveredRowIndex || columnIndex === hoveredColumnIndex,
           'my-table-row__cell--add-row-highlighted': isAddHovered,
           'my-table-row__cell--add-column-highlighted': isAddColumnHighlighted,
           'my-table-row__cell--remove-highlighted': isRemoveHovered || isRemoveColumnHighlighted,
@@ -66,7 +66,7 @@
         :class="[
           'my-table-row__remove-button',
           {
-            'my-table-row__remove-button--hidden': highlightedRow !== rowIndex,
+            'my-table-row__remove-button--hidden': hoveredRowIndex !== rowIndex,
           },
         ]"
         @click="onRemoveRowClick"
@@ -116,8 +116,8 @@ export default defineComponent({
       type: Number,
       required: true,
     },
-    highlightedRow: Number,
-    highlightedColumn: Number,
+    hoveredRowIndex: Number,
+    hoveredColumnIndex: Number,
     isRemoveColumnHighlighted: Boolean,
     isAddColumnHighlighted: Boolean,
     isRowMoving: Boolean,
