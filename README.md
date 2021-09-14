@@ -1,24 +1,23 @@
-# table
+**Simple editable table for Vue**
 
-## Project setup
-```
-npm install
-```
+## Example
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+```html
+<template>
+  <VueTabl :data="tableData" />
+</template>
 
-### Compiles and minifies for production
-```
-npm run build
-```
+<script lang="ts" setup>
+  import { reactive } from 'vue'
+  import VueTabl from 'vue-tabl'
 
-### Lints and fixes files
-```
-npm run lint
+  const tableData = reactive([
+    ['Apple', 'Banana', 'Strawberry'],
+    ['Orange', 'Melon', ''],
+  ])
+</script>
 ```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+## Customization
+
+You can use CSS variables to customize look of the table.
