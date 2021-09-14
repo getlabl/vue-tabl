@@ -1,5 +1,3 @@
-import { reactive } from 'vue'
-
 function normalizeArray(sourceArray: string[][]) {
   let columnCount = 0
   for (const row of sourceArray) {
@@ -89,12 +87,20 @@ export default class TableDataManager {
 
   public removeRow(rowIndex: number) {
     if (rowIndex >= this.rowCount) return
+    if (this._values.length === 1) {
+      for (let i = 0; i < this.columnCount; i++) this._values[0][i] = ''
+      return
+    }
+
     this._values.splice(rowIndex, 1)
   }
 
   public removeColumn(columnIndex: number) {
     if (columnIndex >= this.columnCount) return
-    for (const row of this._values) row.splice(columnIndex, 1)
+    for (const row of this._values) {
+      row.splice(columnIndex, 1)
+      if (row.length === 0) row.push('')
+    }
   }
 
   private static createEmptyRow(columnCount: number) {
