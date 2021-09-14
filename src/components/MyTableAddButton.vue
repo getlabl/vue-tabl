@@ -18,9 +18,9 @@
 </template>
 
 <style lang="scss" scoped>
-$accent-color: var(--my-table-accent-color, var(--my-table-accent-color-default));
-$contrast-color: var(--my-table-contrast-color, var(--my-table-contrast-color-default));
-$radius: var(--my-table-button-radius, var(--my-table-button-radius-default));
+$accent-color: var(--tabl-accent-color, var(--tabl-accent-color-default));
+$contrast-color: var(--tabl-contrast-color, var(--tabl-contrast-color-default));
+$radius: var(--tabl-button-radius, var(--tabl-button-radius-default));
 
 .my-table-add-button {
   width: 22px;

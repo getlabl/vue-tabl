@@ -210,21 +210,21 @@ export default defineComponent({
 
   &:first-of-type {
     .my-table-row__cell:first-of-type {
-      border-top-left-radius: var(--my-table-radius, var(--my-table-radius-default));
+      border-top-left-radius: var(--tabl-radius, var(--tabl-radius-default));
     }
 
     .my-table-row__cell:last-of-type {
-      border-top-right-radius: var(--my-table-radius, var(--my-table-radius-default));
+      border-top-right-radius: var(--tabl-radius, var(--tabl-radius-default));
     }
   }
 
   &:last-of-type {
     .my-table-row__cell:first-of-type {
-      border-bottom-left-radius: var(--my-table-radius, var(--my-table-radius-default));
+      border-bottom-left-radius: var(--tabl-radius, var(--tabl-radius-default));
     }
 
     .my-table-row__cell:last-of-type {
-      border-bottom-right-radius: var(--my-table-radius, var(--my-table-radius-default));
+      border-bottom-right-radius: var(--tabl-radius, var(--tabl-radius-default));
     }
   }
 }
@@ -244,37 +244,37 @@ export default defineComponent({
   transition: background-color 0.2s;
 
   &:hover {
-    background-color: var(--my-table-cell-hover-color, var(--my-table-cell-hover-color-default));
+    background-color: var(--tabl-cell-hover-color, var(--tabl-cell-hover-color-default));
   }
 }
 
 .my-table-row__cell {
   position: relative;
-  background-color: var(--my-table-contrast-color, var(--my-table-contrast-color-default));
-  border-top: 1px solid var(--my-table-border-color, var(--my-table-border-color-default));
-  border-left: 1px solid var(--my-table-border-color, var(--my-table-border-color-default));
-  box-shadow: 0.5px 0.5px 0 0.5px var(--my-table-border-color, var(--my-table-border-color-default));
+  background-color: var(--tabl-contrast-color, var(--tabl-contrast-color-default));
+  border-top: 1px solid var(--tabl-border-color, var(--tabl-border-color-default));
+  border-left: 1px solid var(--tabl-border-color, var(--tabl-border-color-default));
+  box-shadow: 0.5px 0.5px 0 0.5px var(--tabl-border-color, var(--tabl-border-color-default));
   padding: 0;
 }
 
 .my-table-row__cell--highlighted {
-  background-color: var(--my-table-line-hover-color, var(--my-table-line-hover-color-default));
+  background-color: var(--tabl-line-hover-color, var(--tabl-line-hover-color-default));
 }
 
 .my-table-row__cell--highlighted.my-table-row__cell--add-row-highlighted {
   z-index: 1;
-  box-shadow: 0.5px 0.5px 0 0.5px var(--my-table-border-color, var(--my-table-border-color-default)),
-    0 4px 0 var(--my-table-accent-color, var(--my-table-accent-color-default));
+  box-shadow: 0.5px 0.5px 0 0.5px var(--tabl-border-color, var(--tabl-border-color-default)),
+    0 4px 0 var(--tabl-accent-color, var(--tabl-accent-color-default));
 }
 
 .my-table-row__cell--highlighted.my-table-row__cell--add-column-highlighted {
   z-index: 1;
-  box-shadow: 0.5px 0.5px 0 0.5px var(--my-table-border-color, var(--my-table-border-color-default)),
-    4px 0 0 var(--my-table-accent-color, var(--my-table-accent-color-default));
+  box-shadow: 0.5px 0.5px 0 0.5px var(--tabl-border-color, var(--tabl-border-color-default)),
+    4px 0 0 var(--tabl-accent-color, var(--tabl-accent-color-default));
 }
 
 .my-table-row__cell--highlighted.my-table-row__cell--remove-highlighted {
-  background-color: var(--my-table-remove-hover-color, var(--my-table-remove-hover-color-default));
+  background-color: var(--tabl-remove-hover-color, var(--tabl-remove-hover-color-default));
 }
 
 .my-table-row__add-cell,

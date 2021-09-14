@@ -1,11 +1,11 @@
 :root {
-  --my-table-radius-default: 4px;
-  --my-table-button-radius-default: 6px;
-  --my-table-border-color-default: #d6d6d6;
-  --my-table-line-hover-color-default: #f7f8fd;
-  --my-table-cell-hover-color-default: #f3f5fc;
-  --my-table-remove-hover-color-default: #ffeded;
-  --my-table-accent-color-default: #7ca5f7;
-  --my-table-danger-color-default: #ff5959;
-  --my-table-contrast-color-default: white;
+  --tabl-radius-default: 4px;
+  --tabl-button-radius-default: 6px;
+  --tabl-border-color-default: #d6d6d6;
+  --tabl-line-hover-color-default: #f7f8fd;
+  --tabl-cell-hover-color-default: #f3f5fc;
+  --tabl-remove-hover-color-default: #ffeded;
+  --tabl-accent-color-default: #7ca5f7;
+  --tabl-danger-color-default: #ff5959;
+  --tabl-contrast-color-default: white;
 }

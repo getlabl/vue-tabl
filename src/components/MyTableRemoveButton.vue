@@ -26,9 +26,9 @@
 </template>
 
 <style lang="scss" scoped>
-$danger-color: var(--my-table-danger-color, var(--my-table-danger-color-default));
-$contrast-color: var(--my-table-contrast-color, var(--my-table-contrast-color-default));
-$radius: var(--my-table-button-radius, var(--my-table-button-radius-default));
+$danger-color: var(--tabl-danger-color, var(--tabl-danger-color-default));
+$contrast-color: var(--tabl-contrast-color, var(--tabl-contrast-color-default));
+$radius: var(--tabl-button-radius, var(--tabl-button-radius-default));
 
 .my-table-remove-button {
   width: 22px;
