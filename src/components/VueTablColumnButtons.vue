@@ -30,7 +30,7 @@ import { defineComponent, computed, PropType, Component } from 'vue'
 import range from '../util/range'
 
 export default defineComponent({
-  name: 'MyTableColumnAddButtons',
+  name: 'VueTablColumnAddButtons',
   props: {
     columnCount: {
       type: Number,

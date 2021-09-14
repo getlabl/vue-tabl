@@ -1,4 +1,4 @@
 import './variables.css'
-import MyTable from './components/MyTable.vue'
+import VueTabl from './components/VueTabl.vue'
 
-export default MyTable
+export default VueTabl

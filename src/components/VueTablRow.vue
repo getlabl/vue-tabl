@@ -5,7 +5,7 @@
       @mouseenter="onCellHover(rowIndex, -1)"
       @mouseleave="onCellUnhover(rowIndex, -1)"
     >
-      <MyTableAddButton
+      <VueTablAddButton
         tabindex="-1"
         :class="[
           'my-table-row__add-button',
@@ -18,7 +18,8 @@
         @mouseleave="onAddButtonUnhover"
       />
     </th>
-    <MyTableRowCell
+    <VueTablRowCell
+      class="my-table-row__cell"
       v-for="(cell, columnIndex) in data"
       :key="`cell-${columnIndex}`"
       :value="cell"
@@ -48,7 +49,7 @@
       @mouseenter="onCellHover(rowIndex, -1)"
       @mouseleave="onCellUnhover(rowIndex, -1)"
     >
-      <MyTableRemoveButton
+      <VueTablRemoveButton
         tabindex="-1"
         :class="[
           'my-table-row__remove-button',
@@ -66,17 +67,17 @@
 
 <script lang="ts">
 import { defineComponent, ref, PropType, computed } from 'vue'
-import MyTableAddButton from './MyTableAddButton.vue'
-import MyTableRemoveButton from './MyTableRemoveButton.vue'
-import MyTableRowCell from './MyTableRowCell.vue'
+import VueTablAddButton from './VueTablAddButton.vue'
+import VueTablRemoveButton from './VueTablRemoveButton.vue'
+import VueTablRowCell from './VueTablRowCell.vue'
 import useHoverStates from '../hooks/useHoverStates'
 
 export default defineComponent({
-  name: 'MyTableRow',
+  name: 'VueTablRow',
   components: {
-    MyTableAddButton,
-    MyTableRemoveButton,
-    MyTableRowCell,
+    VueTablAddButton,
+    VueTablRemoveButton,
+    VueTablRowCell,
   },
   props: {
     rowIndex: {

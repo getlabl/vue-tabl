@@ -19,7 +19,7 @@
       :value="value"
       @input.stop="onInput(rowIndex, columnIndex, $event.target.value)"
     />
-    <MyTableMoveControl
+    <VueTablMoveControl
       class="my-table-row-cell__move-control-left"
       axis="y"
       v-if="columnIndex === 0"
@@ -27,7 +27,7 @@
       @move-start="onRowMoveStart"
       @move-end="onRowMoveEnd"
     />
-    <MyTableMoveControl
+    <VueTablMoveControl
       class="my-table-row-cell__move-control-right"
       axis="x"
       v-if="rowIndex === 0"
@@ -40,12 +40,12 @@
 
 <script lang="ts">
 import { computed, defineComponent } from 'vue'
-import MyTableMoveControl from './MyTableMoveControl.vue'
+import VueTablMoveControl from './VueTablMoveControl.vue'
 
 export default defineComponent({
-  name: 'MyTableRowCell',
+  name: 'VueTablRowCell',
   components: {
-    MyTableMoveControl,
+    VueTablMoveControl,
   },
   props: {
     value: String,
