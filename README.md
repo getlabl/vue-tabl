@@ -18,6 +18,8 @@
 </script>
 ```
 
+### Live: https://getlabl.github.io/vue-tabl/
+
 ## Customization
 
 You can use CSS variables to customize look of the table.
