@@ -1,6 +1,6 @@
 {
   "name": "vue-tabl",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "main": "./lib/vue-tabl.common.js",
   "repository": {
     "type": "git",
