@@ -1,5 +1,5 @@
 <template>
-  <tr :class="['my-table-row', { 'my-table-row--add-row-highlighted': isAddHovered }]" :style="rootStyle">
+  <tr :class="['my-table-row', { 'my-table-row--add-row-highlighted': isAddButtonHovered }]" :style="rowStyle">
     <th
       class="my-table-row__add-cell"
       @mouseenter="onCellHover(rowIndex, -1)"
@@ -14,50 +14,35 @@
           },
         ]"
         @click="onAddRowClick"
-        @mouseenter="onAddHover"
-        @mouseleave="onAddUnhover"
+        @mouseenter="onAddButtonHover"
+        @mouseleave="onAddButtonUnhover"
       />
     </th>
-    <td
-      :class="[
-        'my-table-row__cell',
-        {
-          'my-table-row__cell--highlighted': rowIndex === hoveredRowIndex || columnIndex === hoveredColumnIndex,
-          'my-table-row__cell--add-row-highlighted': isAddHovered,
-          'my-table-row__cell--add-column-highlighted': isAddColumnHighlighted,
-          'my-table-row__cell--remove-highlighted': isRemoveHovered || isRemoveColumnHighlighted,
-        },
-      ]"
-      :style="getCellStyle(columnIndex)"
+    <MyTableRowCell
       v-for="(cell, columnIndex) in data"
       :key="`cell-${columnIndex}`"
-      @mouseenter="onCellHover(rowIndex, columnIndex)"
-      @mouseleave="onCellUnhover(rowIndex, columnIndex)"
-    >
-      <input
-        class="my-table-row__input"
-        type="text"
-        :key="`input-${columnIndex}`"
-        :value="cell"
-        @input.stop="onInput(rowIndex, columnIndex, $event.target.value)"
-      />
-      <MyTableMoveControl
-        class="my-table-row__move-control-left"
-        axis="y"
-        v-if="columnIndex === 0"
-        @move="onRowMove"
-        @move-start="onRowMoveStart"
-        @move-end="onRowMoveEnd"
-      />
-      <MyTableMoveControl
-        class="my-table-row__move-control-right"
-        axis="x"
-        v-if="rowIndex === 0"
-        @move="onColumnMove"
-        @move-start="onColumnMoveStart(columnIndex)"
-        @move-end="onColumnMoveEnd"
-      />
-    </td>
+      :value="cell"
+      :row-index="rowIndex"
+      :column-index="columnIndex"
+      :column-offset="columnOffsets[columnIndex]"
+      :moving-column-index="movingColumnIndex"
+      :is-add-button-hovered="isAddButtonHovered"
+      :is-remove-button-hovered="isRemoveButtonHovered"
+      :is-remove-column-highlighted="isRemoveColumnHighlighted"
+      :is-add-column-highlighted="isAddColumnHighlighted"
+      :hovered-row-index="hoveredRowIndex"
+      :hovered-column-index="hoveredColumnIndex"
+      :is-any-moving="isAnyMoving"
+      @hover="onCellHover"
+      @unhover="onCellUnhover"
+      @row-move="onRowMove"
+      @row-move-start="onRowMoveStart"
+      @row-move-end="onRowMoveEnd"
+      @column-move="onColumnMove"
+      @column-move-start="onColumnMoveStart"
+      @column-move-end="onColumnMove"
+      @input="onCellInput"
+    />
     <th
       class="my-table-row__remove-cell"
       @mouseenter="onCellHover(rowIndex, -1)"
@@ -72,9 +57,9 @@
           },
         ]"
         @click="onRemoveRowClick"
-        @mouseenter="onRemoveHover"
-        @mouseleave="onRemoveUnhover"
-      ></MyTableRemoveButton>
+        @mouseenter="onRemoveButtonHover"
+        @mouseleave="onRemoveButtonUnhover"
+      />
     </th>
   </tr>
 </template>
@@ -83,7 +68,7 @@
 import { defineComponent, ref, PropType, computed } from 'vue'
 import MyTableAddButton from './MyTableAddButton.vue'
 import MyTableRemoveButton from './MyTableRemoveButton.vue'
-import MyTableMoveControl from './MyTableMoveControl.vue'
+import MyTableRowCell from './MyTableRowCell.vue'
 import useHoverStates from '../hooks/useHoverStates'
 
 export default defineComponent({
@@ -91,7 +76,7 @@ export default defineComponent({
   components: {
     MyTableAddButton,
     MyTableRemoveButton,
-    MyTableMoveControl,
+    MyTableRowCell,
   },
   props: {
     rowIndex: {
@@ -126,7 +111,7 @@ export default defineComponent({
     isAnyMoving: Boolean,
   },
   setup(props, { emit }) {
-    const onInput = function(rowIndex: number, columnIndex: number, value: string) {
+    const onCellInput = function(rowIndex: number, columnIndex: number, value: string) {
       emit('cell-input', rowIndex, columnIndex, value)
     }
 
@@ -140,8 +125,8 @@ export default defineComponent({
 
     const onAddRowClick = () => emit('row-add', props.rowIndex)
 
-    const [isRemoveHovered, onRemoveHover, onRemoveUnhover] = useHoverStates()
-    const [isAddHovered, onAddHover, onAddUnhover] = useHoverStates()
+    const [isRemoveButtonHovered, onRemoveButtonHover, onRemoveButtonUnhover] = useHoverStates()
+    const [isAddButtonHovered, onAddButtonHover, onAddButtonUnhover] = useHoverStates()
 
     const onRemoveRowClick = () => emit('row-remove', props.rowIndex)
 
@@ -153,7 +138,7 @@ export default defineComponent({
     const onColumnMoveStart = (columnIndex: number) => emit('column-move-start', columnIndex)
     const onColumnMoveEnd = () => emit('column-move-end')
 
-    const rootStyle = computed(() => {
+    const rowStyle = computed(() => {
       const result: any = { transform: `translateY(${props.rowOffset}px)` }
 
       if (!props.isRowMoving && props.isAnyMoving) {
@@ -167,66 +152,53 @@ export default defineComponent({
       return result
     })
 
-    const getCellStyle = function(index: number) {
-      const result: any = { transform: `translateX(${props.columnOffsets[index]}px)` }
-
-      if (props.movingColumnIndex !== index && props.isAnyMoving) {
-        result.transition = 'transform 0.2s'
-      }
-      if (props.movingColumnIndex === index) {
-        result.position = 'relative'
-        result.zIndex = 2
-      }
-
-      return result
-    }
-
     return {
-      onInput,
+      onCellInput,
       onCellHover,
       onCellUnhover,
       onAddRowClick,
-      isRemoveHovered,
-      onRemoveHover,
-      onRemoveUnhover,
+      isRemoveButtonHovered,
+      onRemoveButtonHover,
+      onRemoveButtonUnhover,
       onRemoveRowClick,
-      isAddHovered,
-      onAddHover,
-      onAddUnhover,
+      isAddButtonHovered,
+      onAddButtonHover,
+      onAddButtonUnhover,
       onRowMove,
       onRowMoveEnd,
       onRowMoveStart,
-      rootStyle,
+      rowStyle,
       onColumnMove,
       onColumnMoveStart,
       onColumnMoveEnd,
-      getCellStyle,
     }
   },
 })
 </script>
 
 <style lang="scss" scoped>
+$radius: var(--tabl-radius, var(--tabl-radius-default));
+
 .my-table-row {
   height: 40px;
 
   &:first-of-type {
     .my-table-row__cell:first-of-type {
-      border-top-left-radius: var(--tabl-radius, var(--tabl-radius-default));
+      border-top-left-radius: $radius;
     }
 
     .my-table-row__cell:last-of-type {
-      border-top-right-radius: var(--tabl-radius, var(--tabl-radius-default));
+      border-top-right-radius: $radius;
     }
   }
 
   &:last-of-type {
     .my-table-row__cell:first-of-type {
-      border-bottom-left-radius: var(--tabl-radius, var(--tabl-radius-default));
+      border-bottom-left-radius: $radius;
     }
 
     .my-table-row__cell:last-of-type {
-      border-bottom-right-radius: var(--tabl-radius, var(--tabl-radius-default));
+      border-bottom-right-radius: $radius;
     }
   }
 }
@@ -234,50 +206,6 @@ export default defineComponent({
 .my-table-row--add-row-highlighted {
   position: relative;
   z-index: 1;
-}
-
-.my-table-row__input {
-  border: none;
-  height: 40px;
-  width: 100px;
-  text-align: center;
-  background: transparent;
-  padding: 0;
-  transition: background-color 0.2s;
-  color: var(--tabl-tex-color, var(--tabl-text-color-default));
-
-  &:hover {
-    background-color: var(--tabl-cell-hover-color, var(--tabl-cell-hover-color-default));
-  }
-}
-
-.my-table-row__cell {
-  position: relative;
-  background-color: var(--tabl-contrast-color, var(--tabl-contrast-color-default));
-  border-top: 1px solid var(--tabl-border-color, var(--tabl-border-color-default));
-  border-left: 1px solid var(--tabl-border-color, var(--tabl-border-color-default));
-  box-shadow: 0.5px 0.5px 0 0.5px var(--tabl-border-color, var(--tabl-border-color-default));
-  padding: 0;
-}
-
-.my-table-row__cell--highlighted {
-  background-color: var(--tabl-line-hover-color, var(--tabl-line-hover-color-default));
-}
-
-.my-table-row__cell--highlighted.my-table-row__cell--add-row-highlighted {
-  z-index: 1;
-  box-shadow: 0.5px 0.5px 0 0.5px var(--tabl-border-color, var(--tabl-border-color-default)),
-    0 4px 0 var(--tabl-accent-color, var(--tabl-accent-color-default));
-}
-
-.my-table-row__cell--highlighted.my-table-row__cell--add-column-highlighted {
-  z-index: 1;
-  box-shadow: 0.5px 0.5px 0 0.5px var(--tabl-border-color, var(--tabl-border-color-default)),
-    4px 0 0 var(--tabl-accent-color, var(--tabl-accent-color-default));
-}
-
-.my-table-row__cell--highlighted.my-table-row__cell--remove-highlighted {
-  background-color: var(--tabl-remove-hover-color, var(--tabl-remove-hover-color-default));
 }
 
 .my-table-row__add-cell,
@@ -297,18 +225,5 @@ export default defineComponent({
 
 .my-table-row__remove-button {
   margin-left: 8px;
-}
-
-.my-table-row__move-control-left {
-  position: absolute;
-  top: 12px;
-  cursor: ns-resize;
-}
-
-.my-table-row__move-control-right {
-  position: absolute;
-  top: 12px;
-  right: 0;
-  cursor: ew-resize;
 }
 </style>
