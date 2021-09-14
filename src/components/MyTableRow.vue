@@ -6,6 +6,7 @@
       @mouseleave="onCellUnhover(rowIndex, -1)"
     >
       <MyTableAddButton
+        tabindex="-1"
         :class="[
           'my-table-row__add-button',
           {
@@ -63,6 +64,7 @@
       @mouseleave="onCellUnhover(rowIndex, -1)"
     >
       <MyTableRemoveButton
+        tabindex="-1"
         :class="[
           'my-table-row__remove-button',
           {

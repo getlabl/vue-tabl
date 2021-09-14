@@ -9,6 +9,7 @@
       @mouseleave="onCellUnhover(columnIndex)"
     >
       <Component
+        tabindex="-1"
         :is="buttonComponent"
         :class="[
           'my-table-column-buttons__button',
