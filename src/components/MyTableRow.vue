@@ -242,6 +242,7 @@ export default defineComponent({
   background: transparent;
   padding: 0;
   transition: background-color 0.2s;
+  color: var(--tabl-tex-color, var(--tabl-text-color-default));
 
   &:hover {
     background-color: var(--tabl-cell-hover-color, var(--tabl-cell-hover-color-default));
