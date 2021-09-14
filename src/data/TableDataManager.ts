@@ -13,15 +13,6 @@ function normalizeArray(sourceArray: string[][]) {
   return sourceArray
 }
 
-function copyArray(sourceArray: string[][]) {
-  const result: string[][] = new Array(sourceArray.length)
-  for (let i = 0; i < sourceArray.length; i++) {
-    const row = sourceArray[i]
-    result[i] = [...row]
-  }
-  return reactive(result)
-}
-
 export default class TableDataManager {
   private readonly _values: string[][]
   private readonly _readonlyValues: ReadonlyArray<ReadonlyArray<string>>
