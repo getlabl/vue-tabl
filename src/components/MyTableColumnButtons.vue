@@ -13,7 +13,7 @@
         :class="[
           'my-table-column-buttons__button',
           {
-            'my-table-column-buttons__button--hidden': columnIndex !== highlightedColumn,
+            'my-table-column-buttons__button--hidden': columnIndex !== hoveredColumnIndex,
           },
         ]"
         @click="onButtonClick(columnIndex)"
@@ -26,20 +26,16 @@
 
 <script lang="ts">
 import { defineComponent, computed, PropType, Component } from 'vue'
-import MyTableAddButton from './MyTableAddButton.vue'
 import range from '../util/range'
 
 export default defineComponent({
   name: 'MyTableColumnAddButtons',
-  components: {
-    MyTableAddButton,
-  },
   props: {
     columnCount: {
       type: Number,
       required: true,
     },
-    highlightedColumn: Number,
+    hoveredColumnIndex: Number,
     buttonComponent: {
       type: Object as PropType<Component>,
     },
