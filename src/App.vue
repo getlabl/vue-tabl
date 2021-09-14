@@ -8,8 +8,7 @@ import { reactive } from 'vue'
 import MyTable from './components/MyTable.vue'
 
 const tableData = reactive([
-  ['', 'Height', 'Burst'],
-  ['S', '156-160', '74-90'],
-  ['М', '159-164', '88-96'],
+  ['Apple', 'Banana', 'Strawberry'],
+  ['Orange', 'Melon', ''],
 ])
 </script>
