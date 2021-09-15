@@ -22,7 +22,7 @@
     <VueTablMoveControl
       class="my-table-row-cell__move-control-left"
       axis="y"
-      v-if="columnIndex === 0"
+      v-if="isVerticalMoveControlShown"
       @move="onRowMove"
       @move-start="onRowMoveStart"
       @move-end="onRowMoveEnd"
@@ -30,7 +30,7 @@
     <VueTablMoveControl
       class="my-table-row-cell__move-control-right"
       axis="x"
-      v-if="rowIndex === 0"
+      v-if="isHorizontalMoveControlShown"
       @move="onColumnMove"
       @move-start="onColumnMoveStart"
       @move-end="onColumnMoveEnd"
@@ -72,6 +72,8 @@ export default defineComponent({
     hoveredRowIndex: Number,
     hoveredColumnIndex: Number,
     isAnyMoving: Boolean,
+    isFirstRowFixed: Boolean,
+    isFirstColumnFixed: Boolean,
   },
   setup(props, { emit }) {
     const cellStyle = computed(() => {
@@ -103,6 +105,13 @@ export default defineComponent({
       emit('input', rowIndex, columnIndex, value)
     }
 
+    const isVerticalMoveControlShown = computed(
+      () => props.columnIndex === 0 && !(props.rowIndex === 0 && props.isFirstRowFixed)
+    )
+    const isHorizontalMoveControlShown = computed(
+      () => props.rowIndex === 0 && !(props.columnIndex === 0 && props.isFirstColumnFixed)
+    )
+
     return {
       cellStyle,
       onHover,
@@ -114,6 +123,8 @@ export default defineComponent({
       onColumnMoveStart,
       onColumnMoveEnd,
       onInput,
+      isVerticalMoveControlShown,
+      isHorizontalMoveControlShown,
     }
   },
 })

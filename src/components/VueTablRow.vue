@@ -34,6 +34,8 @@
       :hovered-row-index="hoveredRowIndex"
       :hovered-column-index="hoveredColumnIndex"
       :is-any-moving="isAnyMoving"
+      :is-first-row-fixed="isFirstRowFixed"
+      :is-first-column-fixed="isFirstColumnFixed"
       @hover="onCellHover"
       @unhover="onCellUnhover"
       @row-move="onRowMove"
@@ -110,6 +112,8 @@ export default defineComponent({
     isAddColumnHighlighted: Boolean,
     isRowMoving: Boolean,
     isAnyMoving: Boolean,
+    isFirstRowFixed: Boolean,
+    isFirstColumnFixed: Boolean,
   },
   setup(props, { emit }) {
     const onCellInput = function(rowIndex: number, columnIndex: number, value: string) {

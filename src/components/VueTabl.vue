@@ -26,6 +26,8 @@
         :is-row-moving="rowIndex === movingRowIndex"
         :is-any-moving="isRowMoving || isColumnMoving"
         :moving-column-index="movingColumnIndex"
+        :is-first-row-fixed="isFirstRowFixed"
+        :is-first-column-fixed="isFirstColumnFixed"
         @cell-input="onCellInput"
         @cell-hover="onCellHover"
         @cell-unhover="onCellUnhover"
@@ -61,6 +63,7 @@ import VueTablColumnButtons from './VueTablColumnButtons.vue'
 import VueTablAddButton from './VueTablAddButton.vue'
 import useHoverStates from '@/hooks/useHoverStates'
 import useDraggable from '@/hooks/useDraggable'
+import ITableOptions from '@/data/ITableOptions'
 
 export default defineComponent({
   name: 'VueTabl',
@@ -72,6 +75,10 @@ export default defineComponent({
     data: {
       type: Array as PropType<string[][]>,
       required: true,
+    },
+    options: {
+      type: Object as PropType<ITableOptions>,
+      default: () => ({}),
     },
   },
   setup(props, { emit }) {
@@ -108,10 +115,14 @@ export default defineComponent({
     const moveRow = computed(() => dataManager.value.moveRow.bind(dataManager.value))
     const moveColumn = computed(() => dataManager.value.moveColumn.bind(dataManager.value))
 
+    const isFirstRowFixed = computed(() => props.options.isFirstRowFixed ?? false)
+    const isFirstColumnFixed = computed(() => props.options.isFirstColumnFixed ?? false)
+
     const [movingRowIndex, isRowMoving, onRowMoveStart, onRowMoveEnd, onRowMove, getRowOffset] = useDraggable(
       41,
       rowCount,
-      moveRow
+      moveRow,
+      isFirstRowFixed
     )
 
     const [
@@ -121,7 +132,7 @@ export default defineComponent({
       onColumnMoveEnd,
       onColumnMove,
       getColumnOffset,
-    ] = useDraggable(101, columnCount, moveColumn)
+    ] = useDraggable(101, columnCount, moveColumn, isFirstColumnFixed)
 
     const columnOffsets = computed(() => {
       const result: number[] = new Array(columnCount.value)
@@ -162,6 +173,8 @@ export default defineComponent({
       onColumnMoveEnd,
       onColumnMove,
       columnOffsets,
+      isFirstRowFixed,
+      isFirstColumnFixed,
     }
   },
 })

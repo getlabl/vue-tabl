@@ -12,7 +12,8 @@ type DraggableHook = [
 export default function useDraggable(
   elementSize: number,
   draggableCount: Ref<number>,
-  moveElement: Ref<(index: number, offset: number) => void>
+  moveElement: Ref<(index: number, offset: number) => void>,
+  isFirstElementFixed: Ref<boolean>
 ): DraggableHook {
   const movingElementIndex = ref(-1)
   const movingElementOffsetInLines = ref(0)
@@ -30,13 +31,13 @@ export default function useDraggable(
   const onElementMove = function(offset: number) {
     const sign = offset / Math.abs(offset)
     let offsetInElements = Math.round(Math.abs(offset / elementSize)) * sign
-    offsetInElements = Math.max(offsetInElements, -movingElementIndex.value)
+    offsetInElements = Math.max(offsetInElements, -movingElementIndex.value + (isFirstElementFixed.value ? 1 : 0))
     offsetInElements = Math.min(offsetInElements, draggableCount.value - movingElementIndex.value - 1)
 
     if (!isNaN(offsetInElements)) movingElementOffsetInLines.value = offsetInElements
 
     movingElementOffsetInPixels.value = Math.min(
-      Math.max(movingElementIndex.value * -elementSize, offset),
+      Math.max((-movingElementIndex.value + (isFirstElementFixed.value ? 1 : 0)) * elementSize, offset),
       (draggableCount.value - movingElementIndex.value - 1) * elementSize
     )
   }
