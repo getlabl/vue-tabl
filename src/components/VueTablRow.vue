@@ -41,7 +41,7 @@
       @row-move-end="onRowMoveEnd"
       @column-move="onColumnMove"
       @column-move-start="onColumnMoveStart"
-      @column-move-end="onColumnMove"
+      @column-move-end="onColumnMoveEnd"
       @input="onCellInput"
     />
     <th
