@@ -1,4 +1,6 @@
-**Simple editable table for Vue**
+Simple editable table for Vue
+
+Component directly edits 2-dimensional array of strings
 
 ## Example
 
@@ -7,7 +9,7 @@
   <VueTabl :data="tableData" />
 </template>
 
-<script lang="ts" setup>
+<script setup>
   import { reactive } from 'vue'
   import VueTabl from 'vue-tabl'
 
@@ -19,6 +21,32 @@
 ```
 
 ### Live: https://getlabl.github.io/vue-tabl/
+
+## Options
+
+You can pass options with a prop:
+
+```html
+<VueTabl :data="tableData" :options="optionsObject" />
+```
+
+Possible table options:
+
+- isFirstRowFixed - boolean, if true make first row fixed
+- isFirstColumnFixed - boolean, if true make first column fixed
+
+Example options object:
+
+```js
+const options = {
+  isFirstRowFixed: true,
+  isFirstColumnFixed: false,
+}
+```
+
+## Events
+
+- cell-input - payload: rowIndex, columnIndex, value, emits on input in any cell
 
 ## Customization
 
