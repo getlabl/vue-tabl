@@ -32,8 +32,8 @@ You can pass options with a prop:
 
 Possible table options:
 
-- isFirstRowFixed - boolean, if true make first row fixed
-- isFirstColumnFixed - boolean, if true make first column fixed
+- **isFirstRowFixed** - boolean, if true make first row fixed
+- **isFirstColumnFixed** - boolean, if true make first column fixed
 
 Example options object:
 
@@ -46,7 +46,7 @@ const options = {
 
 ## Events
 
-- cell-input - payload: rowIndex, columnIndex, value, emits on input in any cell
+- **cell-input** - payload: rowIndex, columnIndex, value, emits on input in any cell
 
 ## Customization
 
